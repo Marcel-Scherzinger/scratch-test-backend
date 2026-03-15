@@ -1,0 +1,27 @@
+[package]
+name = "scratch-test-backend"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+actix-web = "4.13.0"
+dotenvy = "0.15.7"
+env_logger = "0.11.9"
+schemars = "1.2.1"
+serde = "1.0"
+serde_json = "1.0"
+utoipa = { version = "5.4.0", default-features = false, features = ["macros", "actix_extras"] }
+utoipa-actix-web = { version = "0.1.2" }
+utoipa-scalar = { version = "0.3.0", default-features = false, features = ["actix-web"] }
+
+
+[dependencies.smodel]
+git = "https://github.com/Marcel-Scherzinger/scratch-test-model"
+package = "scratch-test-model"
+default-features = false
+features = ["sb3", "serde", "schemars"]
+
+[dependencies.sspec]
+git = "https://github.com/Marcel-Scherzinger/scratch-test-spec"
+package = "scratch-test-spec"
+default-features = false
