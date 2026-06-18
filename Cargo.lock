@@ -1420,7 +1420,6 @@ dependencies = [
 [[package]]
 name = "scratch-test-koin2627"
 version = "0.1.0"
-source = "git+https://github.com/Marcel-Scherzinger/scratch-test-koin2627#65ed0bc35797c6adeb29d28de07096069d754a84"
 dependencies = [
  "log",
  "scratch-test-graph-analysis",
