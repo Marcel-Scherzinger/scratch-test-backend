@@ -4,6 +4,7 @@
         (name = "scratch-test", description = "")
     ),
     components(schemas(
+        sreport::report::Report
         // crate::model::
     ))
 )]

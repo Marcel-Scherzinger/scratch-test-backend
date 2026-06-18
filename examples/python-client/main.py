@@ -12,13 +12,14 @@ def main(program_path, spec):
     resp = requests.post(
         "http://localhost:42139/api/v1/run",
         headers={"Content-Type": "application/json"},
-        json={"specification": spec, "program": program},
+        json={"program": program, "exercise": "j26d01a01"},
+        verify=False,
     )
-    print(resp)
+    print(json.dumps(resp.json(), indent=4))
 
 
 if __name__ == "__main__":
-    program_path = "../../sb3/sum-from-to-with-repeat-loop.sb3"
+    program_path = "../../../scratch-test-koin2627/d01-a01-name-sol.sb3"
     spec = {
         "lints": [
             {
