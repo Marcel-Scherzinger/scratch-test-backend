@@ -1420,6 +1420,7 @@ dependencies = [
 [[package]]
 name = "scratch-test-koin2627"
 version = "0.1.0"
+source = "git+https://github.com/Marcel-Scherzinger/scratch-test-koin2627#331b5bfb7709e66c6309b1d61823cd173553e959"
 dependencies = [
  "log",
  "scratch-test-graph-analysis",
@@ -1464,7 +1465,7 @@ dependencies = [
 [[package]]
 name = "scratch-test-report"
 version = "0.1.0"
-source = "git+https://github.com/Marcel-Scherzinger/scratch-test-report#257e32c3bc885abf478e3821488e522041408145"
+source = "git+https://github.com/Marcel-Scherzinger/scratch-test-report#f3d80d04e40414ab892e27358f96d6438cc7ad23"
 dependencies = [
  "derive-getters",
  "derive_more",

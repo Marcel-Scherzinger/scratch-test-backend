@@ -18,9 +18,15 @@ pub fn configure() -> impl FnOnce(&mut ServiceConfig) {
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "kebab-case")]
 pub struct RunTest {
+    /// the exercise identifier
     exercise: String,
+    /// project.json of a sb3 file
     program: serde_json::Value,
+    /// Adds messages that could always be deduced from the other (structured) data of a report
+    #[serde(default)]
+    add_extra_messages: bool,
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
@@ -47,6 +53,7 @@ pub async fn run_test(
     let RunTest {
         exercise: identifier,
         program,
+        add_extra_messages,
     } = input;
 
     let doc = ProjectDoc::from_json(&program)
@@ -57,7 +64,7 @@ pub async fn run_test(
         .ok_or_else(|| actix_web::error::ErrorNotFound("No exercise for identifier"))?;
 
     let report = spawn_blocking(move || {
-        let report = exercise.create(&doc);
+        let mut report = exercise.create(&doc);
         if let Some(sim) = report.simulation() {
             for category in sim.categories() {
                 for case in category.cases() {
@@ -85,6 +92,10 @@ pub async fn run_test(
                     }
                 }
             }
+        }
+        if add_extra_messages {
+            log::debug!("Add extra messages to report");
+            report.add_extra_messages();
         }
         report
     })
