@@ -17,32 +17,65 @@
     flake-utils,
   }: let
     pkgs = nixpkgs.legacyPackages."x86_64-linux";
-  in
-    flake-utils.lib.eachDefaultSystem (system: rec {
-      # devShells.default = import ./shell.nix pkgs;
 
-      buildBackend = {
-        exercises ? scratch-test-koin2627,
-        cargoHash ? "sha256-5FujgZhRoYaAu1m//aDwlt2iIwhBjiYp5B5VLeUn+1M=",
-      }:
-        pkgs.rustPlatform.buildRustPackage {
-          name = "scratch-test-backend";
+    patchedSources = let
+      exerciseRepoInCargoToml = "https://github.com/marcel-scherzinger/scratch-test-koin2627";
+      localNameInCargoToml = "skoin2627";
+      packageName = "scratch-test-koin2627";
+      lock-line-to-remove = ''source = "git+${exerciseRepoInCargoToml}'';
+    in
+      {exercises}:
+        pkgs.stdenv.mkDerivation {
           src = ./.;
-          buildInputs = [];
-          nativeBuildInputs = [pkgs.pkg-config];
-          cargoHash = cargoHash;
-
-          postPatch = ''
-            echo "Replace url with local files..., if this fails: compare flake.nix with Cargo.toml url"
-            grep 'git = "https://github.com/Marcel-Scherzinger/scratch-test-koin2627"' Cargo.toml
-            substituteInPlace Cargo.toml \
-              --replace 'git = "https://github.com/Marcel-Scherzinger/scratch-test-koin2627"' \
-              'path = "${exercises}"'
+          name = "backend-sources";
+          buildPhase = let
+            text = ''
+              [patch."${exerciseRepoInCargoToml}".${localNameInCargoToml}]
+              path = "${exercises}"
+              package = "${packageName}"
+            '';
+          in ''
+            mkdir $out
+            cp -r . $out
+            ${pkgs.gnugrep}/bin/grep -i -v '${lock-line-to-remove}' Cargo.lock > $out/Cargo.lock
+            echo '${text}' >> $out/Cargo.toml
           '';
         };
+    buildBackend = {
+      exercises,
+      cargoHash,
+    }:
+      pkgs.rustPlatform.buildRustPackage {
+        name = "scratch-test-backend";
+        src = "${patchedSources {inherit exercises;}}";
+        buildInputs = [];
+        nativeBuildInputs = [pkgs.pkg-config];
 
-      packages.scratch-test-backend = buildBackend {};
+        inherit cargoHash;
+        #cargoLock.lockFile = "${self.packages."${system}".cargoLockWithExPath}";
+      };
+  in
+    {
+      inherit buildBackend;
+    }
+    // flake-utils.lib.eachDefaultSystem (system: rec {
+      packages = {
+        scratch-test-backend = buildBackend {
+          exercises = scratch-test-koin2627;
+          cargoHash = "sha256-ExIwEdVQ/riAz5jfAshcwVYs6N5oTdeYMdCu2786XFs=";
+        };
 
-      packages.default = self.packages.x86_64-linux.scratch-test-backend;
+        default = self.packages.${system}.scratch-test-backend;
+
+        scratch-test-backend-sources = patchedSources {exercises = scratch-test-koin2627;};
+      };
+      # packages.cargoLockWithExPath = pkgs.stdenv.mkDerivation {
+      #   src = ./.;
+      #   name = "Cargo.lock";
+      #   buildPhase = ''
+      #     touch $out
+      #     ${pkgs.gnugrep}/bin/grep -v '${lock-line-to-remove}' Cargo.lock > $out
+      #   '';
+      # };
     });
 }
