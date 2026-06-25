@@ -44,11 +44,11 @@
     "scratch-test-koin2627": {
       "flake": false,
       "locked": {
-        "lastModified": 1781772957,
-        "narHash": "sha256-7LEJ5fwwt7e6w5+POvMPmQAmA8qju7SPFjPE9Ce94do=",
+        "lastModified": 1782125944,
+        "narHash": "sha256-wMk8k4/O5WA7K1W1ayzLOj7Gd6wisz302dfQy3JgX7g=",
         "owner": "marcel-scherzinger",
         "repo": "scratch-test-koin2627",
-        "rev": "65ed0bc35797c6adeb29d28de07096069d754a84",
+        "rev": "331b5bfb7709e66c6309b1d61823cd173553e959",
         "type": "github"
       },
       "original": {

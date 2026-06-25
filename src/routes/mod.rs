@@ -13,6 +13,7 @@ pub fn configure() -> impl FnOnce(&mut ServiceConfig) {
         config
             .service(schema)
             .service(schema_json)
+            .service(check_existence)
             .service(run_test);
     }
 }
@@ -29,11 +30,42 @@ pub struct RunTest {
     add_extra_messages: bool,
 }
 
+#[derive(Debug, serde::Deserialize, serde::Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "kebab-case")]
+pub struct ExerciseExistenceCheck {
+    /// the exercise identifier
+    exercise: String,
+}
+
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
 pub struct FailedProgram {
     exercise: String,
     error: RunningError,
     program: serde_json::Value,
+}
+
+#[utoipa::path(responses(
+    (status = OK, description = "Identifier exists"),
+    (status = 404, description = "Unknown exercise identifier")
+))]
+#[get("/check")]
+/// Returns if a specific exercise identifier exists
+pub async fn check_existence(
+    exercises: web::Data<Exercises>,
+    input: web::Json<ExerciseExistenceCheck>,
+) -> Result<String> {
+    let input = input.into_inner();
+    let ExerciseExistenceCheck {
+        exercise: identifier,
+    } = input;
+
+    if exercises.get(&identifier).is_none() {
+        Err(actix_web::error::ErrorNotFound(
+            "No exercise for identifier",
+        ))
+    } else {
+        Ok("OK".into())
+    }
 }
 
 #[utoipa::path(responses(
