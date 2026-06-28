@@ -32,8 +32,10 @@ pub struct RunTest {
     #[serde(default)]
     add_extra_messages: bool,
     /// The kind of application, the user used
+    #[serde(default)]
     agent: Option<String>,
     /// A session id of the user
+    #[serde(default)]
     session: Option<String>,
 }
 
