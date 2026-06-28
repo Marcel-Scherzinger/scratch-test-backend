@@ -82,9 +82,9 @@ async fn main() -> Result<(), std::io::Error> {
             web::FormConfig::default().limit(config.server().limits().form().unwrap_or(&10 * 1024));
 
         let mut cors = actix_cors::Cors::default()
-            .allowed_methods(vec!["GET", "POST", "OPTIONS"])
-            .allowed_header(header::CONTENT_TYPE)
             .allowed_headers(config.server().cors().allowed_headers())
+            .allow_any_method()
+            .allow_any_header()
             .max_age(*config.server().cors().max_age());
 
         for origin in config.server().cors().allowed_origins() {
