@@ -4,7 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+actix-cors = "0.7.1"
 actix-web = "4.13.0"
+config = "0.15.25"
+derive-getters = "0.5.0"
 dotenvy = "0.15.7"
 env_logger = "0.11.9"
 log = "0.4.32"
@@ -14,6 +17,8 @@ serde_json = "1.0"
 utoipa = { version = "5.5.0", default-features = false, features = ["macros", "actix_extras"] }
 utoipa-actix-web = { version = "0.1.2" }
 utoipa-scalar = { version = "0.3.0", default-features = false, features = ["actix-web"] }
+
+sqlx = { version = "0.8", default-features = false, features = ["runtime-async-std", "postgres", "migrate", "macros"] }
 
 [dependencies.skoin2627]
 git = "https://github.com/Marcel-Scherzinger/scratch-test-koin2627"

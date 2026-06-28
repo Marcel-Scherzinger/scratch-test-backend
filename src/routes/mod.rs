@@ -1,9 +1,12 @@
+use std::sync::Arc;
+
 use actix_web::{
     Result, get, post,
     rt::task::spawn_blocking,
     web::{self, Json},
 };
 use smodel::ProjectDoc;
+use sqlx::PgPool;
 use sreport::{Exercises, report::Report, simulation::RunningError};
 
 use crate::setup::api_docs::ServiceConfig;
@@ -28,6 +31,10 @@ pub struct RunTest {
     /// Adds messages that could always be deduced from the other (structured) data of a report
     #[serde(default)]
     add_extra_messages: bool,
+    /// The kind of application, the user used
+    agent: Option<String>,
+    /// A session id of the user
+    session: Option<String>,
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize, utoipa::ToSchema)]
@@ -35,13 +42,6 @@ pub struct RunTest {
 pub struct ExerciseExistenceCheck {
     /// the exercise identifier
     exercise: String,
-}
-
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
-pub struct FailedProgram {
-    exercise: String,
-    error: RunningError,
-    program: serde_json::Value,
 }
 
 #[utoipa::path(responses(
@@ -80,12 +80,16 @@ pub async fn check_existence(
 pub async fn run_test(
     exercises: web::Data<Exercises>,
     input: web::Json<RunTest>,
+    database: web::Data<Option<PgPool>>,
 ) -> Result<Json<Report>> {
+    let database: Arc<Option<PgPool>> = database.into_inner();
     let input = input.into_inner();
     let RunTest {
         exercise: identifier,
         program,
         add_extra_messages,
+        agent,
+        session,
     } = input;
 
     let doc = ProjectDoc::from_json(&program)
@@ -111,20 +115,10 @@ pub async fn run_test(
                             continue;
                         }
                     }
-                    if let Some(error) = case.error_code().clone() {
-                        let s = FailedProgram {
-                            error,
-                            program: program.clone(),
-                            exercise: identifier.clone(),
-                        };
-                        if let Ok(s) = serde_json::to_string(&s) {
-                            // TODO: store in new file
-                            log::warn!("[report/failed-program] {s}");
-                        }
-                    }
                 }
             }
         }
+
         if add_extra_messages {
             log::debug!("Add extra messages to report");
             report.add_extra_messages();
@@ -138,7 +132,33 @@ pub async fn run_test(
         actix_web::error::ErrorInternalServerError("internal error")
     })?;
 
+    let report_json = serde_json::to_value(&report)
+        .map_err(|_| actix_web::error::ErrorInternalServerError("internal error"))?;
+
+    if let Some(database) = database.as_ref() {
+        let r = sqlx::query(
+            r#"INSERT INTO submissions(agent, session, exercise, program, report)
+            VALUES($1, $2, $3, $4, $5) RETURNING ID"#,
+        )
+        .bind(agent.map(limit_string))
+        .bind(session.map(limit_string))
+        .bind(limit_string(identifier))
+        .bind(program)
+        .bind(report_json)
+        .fetch_one(database)
+        .await;
+        if let Err(err) = r {
+            log::error!("[report/db] storing in database: {err:?}");
+        }
+    }
+
     Ok(Json(report))
+}
+
+fn limit_string(mut input: String) -> String {
+    let upper = input.floor_char_boundary(242);
+    input.truncate(upper);
+    input
 }
 
 #[utoipa::path(responses(
