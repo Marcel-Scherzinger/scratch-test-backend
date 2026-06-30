@@ -48,7 +48,7 @@ pub struct RunTest {
         ("exercise" = String, Path, description = "The identifier of the exercise in question"),
     )
 )]
-#[get("/check/:exercise")]
+#[get("/check/{exercise}")]
 /// Returns if a specific exercise identifier exists
 pub async fn check_existence(
     exercises: web::Data<Exercises>,
