@@ -39,27 +39,22 @@ pub struct RunTest {
     session: Option<String>,
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "kebab-case")]
-pub struct ExerciseExistenceCheck {
-    /// the exercise identifier
-    exercise: String,
-}
-
-#[utoipa::path(responses(
-    (status = OK, description = "Identifier exists"),
-    (status = 404, description = "Unknown exercise identifier")
-))]
-#[get("/check")]
+#[utoipa::path(
+    responses(
+        (status = OK, description = "Identifier exists"),
+        (status = 404, description = "Unknown exercise identifier")
+    ),
+    params(
+        ("exercise" = String, Path, description = "The identifier of the exercise in question"),
+    )
+)]
+#[get("/check/:exercise")]
 /// Returns if a specific exercise identifier exists
 pub async fn check_existence(
     exercises: web::Data<Exercises>,
-    input: web::Json<ExerciseExistenceCheck>,
+    input: web::Path<String>,
 ) -> Result<String> {
-    let input = input.into_inner();
-    let ExerciseExistenceCheck {
-        exercise: identifier,
-    } = input;
+    let identifier = input.into_inner();
 
     if exercises.get(&identifier).is_none() {
         Err(actix_web::error::ErrorNotFound(

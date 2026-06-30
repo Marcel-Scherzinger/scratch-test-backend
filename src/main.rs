@@ -5,7 +5,6 @@ use setup::api_docs::scope;
 
 use actix_web::{
     App, HttpResponse, HttpServer,
-    http::header,
     middleware::Logger,
     web::{self, Data},
 };
