@@ -2506,7 +2506,7 @@ dependencies = [
 [[package]]
 name = "scratch-test-report"
 version = "0.1.0"
-source = "git+https://github.com/Marcel-Scherzinger/scratch-test-report#7ead59faf49b4ba195138827c614f4587aadf966"
+source = "git+https://github.com/Marcel-Scherzinger/scratch-test-report#9a71c462467b5e5a99a67987f5128737f131e0d8"
 dependencies = [
  "derive-getters",
  "derive_more",
