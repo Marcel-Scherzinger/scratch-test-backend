@@ -103,6 +103,7 @@ pub async fn run_test(
 
     let report = spawn_blocking(move || {
         let mut report = exercise.create(&doc);
+        report.limit_tests_per_category();
         if let Some(sim) = report.simulation() {
             for category in sim.categories() {
                 for case in category.cases() {
