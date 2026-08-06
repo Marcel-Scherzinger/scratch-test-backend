@@ -90,7 +90,7 @@ pub async fn run_test(
     } = input;
 
     let doc = ProjectDoc::from_json(&program)
-        .map_err(|err| actix_web::error::ErrorBadRequest(err.to_string()))?;
+        .map_err(|err| actix_web::error::ErrorUnprocessableEntity(err.to_string()))?;
 
     let exercise = exercises
         .get(&identifier)
