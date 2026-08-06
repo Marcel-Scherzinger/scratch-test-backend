@@ -67,7 +67,7 @@ pub async fn check_existence(
 
 #[utoipa::path(responses(
     (status = OK, description = "Successful report generation", body=Report),
-    (status = 400, description = "Invalid program"),
+    (status = 422, description = "Invalid program"),
     (status = 404, description = "Unknown exercise identifier")
 ))]
 #[post("/run")]

@@ -75,10 +75,16 @@ async fn main() -> Result<(), std::io::Error> {
 
         let exercises = Data::new(skoin2627::get_exercises());
 
-        let json_config =
-            web::JsonConfig::default().limit(config.server().limits().json().unwrap_or(&10 * 1024));
-        let form_config =
-            web::FormConfig::default().limit(config.server().limits().form().unwrap_or(&10 * 1024));
+        let json_config = web::JsonConfig::default().limit({
+            let limit = config.server().limits().json().unwrap_or(&10 * 1024);
+            log::info!("set json limitation to max: {limit}");
+            limit
+        });
+        let form_config = web::FormConfig::default().limit({
+            let limit = config.server().limits().form().unwrap_or(&10 * 1024);
+            log::info!("set form limitation to max: {limit}");
+            limit
+        });
 
         let mut cors = actix_cors::Cors::default()
             .allowed_headers(config.server().cors().allowed_headers())
@@ -89,6 +95,7 @@ async fn main() -> Result<(), std::io::Error> {
         for origin in config.server().cors().allowed_origins() {
             cors = cors.allowed_origin(origin);
         }
+        log::info!("Set CORS-Configuration: {cors:?}");
 
         // general setup for all apps (logging and global application data)
         let app = App::new();
