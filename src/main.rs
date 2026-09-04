@@ -48,9 +48,23 @@ async fn main() -> Result<(), std::io::Error> {
         if let Some(password) = database.password() {
             options = options.password(password);
         }
-        let pool = PgPool::connect_with(options)
-            .await
-            .expect("Database present?");
+
+        let mut delay = 1;
+        let mut pool = None;
+
+        while pool.is_none() {
+            let res = PgPool::connect_with(options.clone()).await;
+            if delay > 600 {
+                break;
+            }
+            if res.is_err() {
+                log::error!("Connection error with database: {res:?}, retry in {delay}s");
+            }
+            pool = res.ok();
+            std::thread::sleep(std::time::Duration::from_secs(delay));
+            delay *= 2;
+        }
+        let pool = pool.expect("No database available");
 
         sqlx::migrate!("./migrations/")
             .run(&pool)
