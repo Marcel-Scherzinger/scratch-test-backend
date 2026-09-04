@@ -62,7 +62,7 @@
       packages = {
         scratch-test-backend = buildBackend {
           exercises = scratch-test-koin2627;
-          cargoHash = "sha256-bm6kK8DhmqeQO/A3ReXYjTZm30FKrFgw3lC8yF0svO0=";
+          cargoHash = "sha256-p9GgL9KdYb5mdFAmY5Z/7C6QZ41LqfM7COgs5ZYwJr4=";
         };
 
         default = self.packages.${system}.scratch-test-backend;
