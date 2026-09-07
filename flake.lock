@@ -20,11 +20,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1788404924,
-        "narHash": "sha256-lhEhY8X5EgkQ/eg6IFz4cc8jRuSYSvnxx1al7d1dvZ0=",
+        "lastModified": 1788614874,
+        "narHash": "sha256-7QYjT2vHLuX9Z1pdxHXDKCbh1CR3D/2rywB9Tx0MPRg=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "0968519e14f7aa7d3e9b389682bd74d2b51c8ce8",
+        "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
         "type": "github"
       },
       "original": {
@@ -44,11 +44,11 @@
     "scratch-test-koin2627": {
       "flake": false,
       "locked": {
-        "lastModified": 1788541789,
-        "narHash": "sha256-gr8Z1BOQeCDftyRWBCI+5vkNMLg+xnhw7u5rgC9UCtg=",
+        "lastModified": 1788786121,
+        "narHash": "sha256-j+/cuCWNqPHz5hOhEa/GAT5MLZvYg2/XDdFybf1kqRc=",
         "owner": "marcel-scherzinger",
         "repo": "scratch-test-koin2627",
-        "rev": "639101a50d55695c29c4c6853c9487e1139faefc",
+        "rev": "bb7b70feda63b56d352130db4dd895961991c2be",
         "type": "github"
       },
       "original": {
